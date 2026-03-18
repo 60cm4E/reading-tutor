@@ -1,0 +1,503 @@
+/* ===== Phase 1: Vocabulary ===== */
+
+/* Phonics intro */
+.phonics-screen {
+  padding: 20px;
+}
+
+.phonics-card-wrapper {
+  margin: 16px 0;
+  animation: bounceIn 0.5s ease;
+}
+
+.phonics-zone {
+  background: var(--color-bg-card);
+  text-align: center;
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  position: relative;
+}
+
+.phonics-zone:active {
+  transform: scale(0.98);
+}
+
+.phonics-zone-letter {
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  box-shadow: var(--shadow-lg);
+  padding: 28px 24px 20px;
+  border: 3px solid rgba(108,99,255,0.15);
+  border-bottom: none;
+}
+
+.phonics-zone-word {
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: 16px 24px 20px;
+  border: 3px solid rgba(255,179,71,0.25);
+  border-top: 2px dashed rgba(108,99,255,0.12);
+  background: linear-gradient(180deg, #FFFBF5, var(--color-bg-card));
+}
+
+.phonics-zone-letter:active {
+  background: rgba(108,99,255,0.03);
+}
+
+.phonics-zone-word:active {
+  background: linear-gradient(180deg, #FFF5E6, #FFFBF5);
+}
+
+.phonics-card-wrapper {
+  margin: 16px 0;
+  animation: bounceIn 0.5s ease;
+}
+
+.phonics-letter {
+  font-size: 5rem;
+  font-weight: 900;
+  font-family: var(--font-en);
+  color: var(--color-primary);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.phonics-letter-lower {
+  font-size: 3.5rem;
+  color: var(--color-primary-light);
+  font-weight: 700;
+  font-family: var(--font-en);
+}
+
+.phonics-sound {
+  font-size: 1.3rem;
+  color: var(--color-secondary);
+  font-weight: 700;
+  margin-top: 12px;
+}
+
+.phonics-example-word {
+  font-family: var(--font-en);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 4px 0;
+}
+
+.phonics-example-word mark {
+  background: rgba(108,99,255,0.15);
+  color: var(--color-primary);
+  border-radius: 4px;
+  padding: 0 4px;
+  font-weight: 800;
+}
+
+/* Phonics speak buttons */
+.phonics-speak-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  background: rgba(108,99,255,0.08);
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-top: 12px;
+  transition: all var(--transition-fast);
+  border: 1px solid rgba(108,99,255,0.15);
+}
+
+.phonics-speak-btn:active {
+  transform: scale(0.95);
+  background: rgba(108,99,255,0.15);
+}
+
+.phonics-speak-btn.speaking {
+  animation: pulse 0.8s ease infinite;
+  background: rgba(108,99,255,0.15);
+}
+
+.phonics-speak-btn-word {
+  background: rgba(255,179,71,0.1);
+  color: var(--color-accent);
+  border-color: rgba(255,179,71,0.2);
+}
+
+.phonics-speak-btn-word:active {
+  background: rgba(255,179,71,0.2);
+}
+
+.phonics-speak-btn-word.speaking {
+  background: rgba(255,179,71,0.2);
+}
+
+
+
+.phonics-nav {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.phonics-dots {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.phonics-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-border);
+  transition: all var(--transition-fast);
+}
+
+.phonics-dot.active {
+  width: 24px;
+  background: var(--color-primary);
+}
+
+/* Vocab cards */
+.vocab-screen {
+  padding: 20px;
+}
+
+.vocab-card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  margin: 16px 0;
+  animation: fadeInUp 0.4s ease;
+  cursor: pointer;
+}
+
+.vocab-card-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  background: linear-gradient(135deg, #E8EAFF, #FFE8F0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+}
+
+.vocab-card-body {
+  padding: 24px;
+  text-align: center;
+}
+
+.vocab-word {
+  font-family: var(--font-en);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin-bottom: 4px;
+}
+
+.vocab-syllable {
+  font-family: var(--font-en);
+  font-size: 1rem;
+  color: var(--color-primary-light);
+  font-weight: 600;
+  margin-bottom: 12px;
+  letter-spacing: 2px;
+}
+
+.vocab-meaning {
+  font-size: 1.2rem;
+  color: var(--color-text-light);
+  font-weight: 600;
+}
+
+.vocab-speaker-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px auto 0;
+  box-shadow: 0 4px 12px rgba(108,99,255,0.3);
+  transition: transform var(--transition-bounce);
+}
+
+.vocab-speaker-btn:active {
+  transform: scale(0.9);
+}
+
+.vocab-speaker-btn.speaking {
+  animation: pulse 0.8s ease infinite;
+}
+
+.vocab-nav {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* Vocab test */
+.vocab-test-screen {
+  padding: 20px;
+}
+
+.test-question-header {
+  text-align: center;
+  padding: 16px;
+}
+
+.test-question-num {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.test-prompt {
+  font-size: 1.8rem;
+  font-weight: 800;
+  font-family: var(--font-en);
+  color: var(--color-text);
+  margin: 12px 0 8px;
+}
+
+.test-prompt-ko {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 12px 0 8px;
+}
+
+.test-instruction {
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+  font-weight: 500;
+}
+
+/* Choice buttons */
+.choices-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 8px 0;
+}
+
+.choice-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-text);
+  text-align: left;
+  transition: all var(--transition-fast);
+  border: 2px solid transparent;
+  min-height: 56px;
+}
+
+.choice-btn:active {
+  transform: scale(0.97);
+}
+
+.choice-btn .choice-letter {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  font-family: var(--font-en);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.choice-btn.correct {
+  border-color: var(--color-success);
+  background: rgba(78,205,196,0.08);
+  animation: bounceIn 0.3s ease;
+}
+
+.choice-btn.correct .choice-letter {
+  background: var(--color-success);
+  color: white;
+}
+
+.choice-btn.wrong {
+  border-color: var(--color-danger);
+  background: rgba(255,107,107,0.08);
+  animation: shake 0.4s ease;
+}
+
+.choice-btn.wrong .choice-letter {
+  background: var(--color-danger);
+  color: white;
+}
+
+.choice-btn:disabled {
+  pointer-events: none;
+}
+
+/* Spelling input */
+.spelling-input-area {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.spelling-display {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.spelling-letter-box {
+  width: 44px;
+  height: 52px;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-card);
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-en);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  transition: all var(--transition-fast);
+}
+
+.spelling-letter-box.active {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
+}
+
+.spelling-letter-box.filled {
+  background: rgba(108,99,255,0.05);
+  border-color: var(--color-primary);
+}
+
+.spelling-letter-box.hint {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  background: rgba(255,179,71,0.08);
+}
+
+.spelling-letter-box.correct {
+  border-color: var(--color-success);
+  color: var(--color-success);
+  background: rgba(78,205,196,0.08);
+}
+
+.spelling-letter-box.wrong {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+  animation: shake 0.4s ease;
+}
+
+/* Virtual keyboard */
+.virtual-keyboard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 4px;
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+.key-btn {
+  min-width: 30px;
+  height: 42px;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-card);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  font-family: var(--font-en);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.key-btn:active {
+  background: var(--color-primary);
+  color: white;
+  transform: scale(0.92);
+}
+
+.key-btn.key-wide {
+  min-width: 52px;
+  font-size: 0.8rem;
+}
+
+.key-btn.key-backspace {
+  min-width: 52px;
+}
+
+/* Hint button */
+.hint-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  background: rgba(255,179,71,0.12);
+  color: var(--color-accent);
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin: 12px auto;
+  transition: all var(--transition-fast);
+}
+
+.hint-btn:active {
+  transform: scale(0.95);
+}
+
+/* Score result */
+.score-result {
+  text-align: center;
+  padding: 32px 20px;
+  animation: fadeInUp 0.5s ease;
+}
+
+.score-emoji {
+  font-size: 4rem;
+  margin-bottom: 16px;
+  animation: bounceIn 0.6s ease;
+}
+
+.score-value {
+  font-size: 3rem;
+  font-weight: 900;
+  font-family: var(--font-en);
+  color: var(--color-primary);
+}
+
+.score-label {
+  font-size: 1rem;
+  color: var(--color-text-light);
+  font-weight: 600;
+  margin-bottom: 24px;
+}
