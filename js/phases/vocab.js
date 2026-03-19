@@ -409,7 +409,7 @@ function renderSpellingTest(container, ctx) {
     });
 
     // Backspace
-    document.getElementById('key-backspace')?.addEventListener('click', () => {
+    function doBackspace() {
       for (let i = userInput.length - 1; i >= 0; i--) {
         if (userInput[i] !== '' && !revealedIndices.includes(i)) {
           userInput[i] = '';
@@ -417,10 +417,16 @@ function renderSpellingTest(container, ctx) {
           break;
         }
       }
-    });
+    }
+
+    document.getElementById('key-backspace')?.addEventListener('click', doBackspace);
 
     // Submit
-    document.getElementById('key-submit')?.addEventListener('click', async () => {
+    let isSubmitting = false;
+    async function doSubmit() {
+      if (isSubmitting) return;
+      isSubmitting = true;
+
       const answer = userInput.join('');
       totalAttempted++;
 
@@ -448,7 +454,43 @@ function renderSpellingTest(container, ctx) {
         currentIdx++;
         renderSpelling();
       }
-    });
+    }
+
+    document.getElementById('key-submit')?.addEventListener('click', doSubmit);
+
+    // Physical keyboard support (for Chromebook / desktop)
+    function handleKeydown(e) {
+      const key = e.key.toLowerCase();
+
+      // Letter keys a-z
+      if (key.length === 1 && key >= 'a' && key <= 'z') {
+        e.preventDefault();
+        const nextEmpty = userInput.findIndex((ch, i) => ch === '' && !revealedIndices.includes(i));
+        if (nextEmpty !== -1) {
+          userInput[nextEmpty] = key;
+          renderInput();
+        }
+      }
+
+      // Backspace
+      if (e.key === 'Backspace') {
+        e.preventDefault();
+        doBackspace();
+      }
+
+      // Enter = submit
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        doSubmit();
+      }
+    }
+
+    // Remove previous listener if any, then add new one
+    if (window._spellingKeydownHandler) {
+      document.removeEventListener('keydown', window._spellingKeydownHandler);
+    }
+    window._spellingKeydownHandler = handleKeydown;
+    document.addEventListener('keydown', handleKeydown);
   }
 
   renderSpelling();
