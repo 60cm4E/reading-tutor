@@ -7,6 +7,7 @@ import { renderReading } from './phases/reading.js';
 import { renderQuiz } from './phases/quiz.js';
 import { renderAdmin } from './admin/admin.js';
 import { renderReport } from './admin/report.js';
+import { keyboard, renderShortcutHints } from './keyboard.js';
 
 const mainContent = document.getElementById('main-content');
 const headerTitle = document.getElementById('header-title');
@@ -139,31 +140,48 @@ function renderPhasePicker(container, params) {
           </div>
         `).join('')}
       </div>
+      ${renderShortcutHints([
+        { keyLabel: '1~' + phases.length, description: '학습 단계 선택' },
+      ])}
     </div>
   `;
 
   // Bind clicks
+  function navigatePhase(p) {
+    switch (p.key) {
+      case 'vocab':
+        navigateTo('vocab', { reading, subPhase: 'phonics' });
+        break;
+      case 'sentenceBuild':
+        navigateTo('vocab', { reading, subPhase: 'sentenceBuild' });
+        break;
+      case 'reading':
+        navigateTo('reading', { reading });
+        break;
+      case 'quiz':
+        navigateTo('quiz', { reading });
+        break;
+      case 'review':
+        navigateTo('review', { reading });
+        break;
+    }
+  }
+
   phases.forEach(p => {
-    document.getElementById(`phase-${p.key}`)?.addEventListener('click', () => {
-      switch (p.key) {
-        case 'vocab':
-          navigateTo('vocab', { reading, subPhase: 'phonics' });
-          break;
-        case 'sentenceBuild':
-          navigateTo('vocab', { reading, subPhase: 'sentenceBuild' });
-          break;
-        case 'reading':
-          navigateTo('reading', { reading });
-          break;
-        case 'quiz':
-          navigateTo('quiz', { reading });
-          break;
-        case 'review':
-          navigateTo('review', { reading });
-          break;
-      }
-    });
+    document.getElementById(`phase-${p.key}`)?.addEventListener('click', () => navigatePhase(p));
   });
+
+  // Keyboard shortcuts for phase selection
+  const phaseShortcuts = [];
+  phases.forEach((p, i) => {
+    if (i < 9) {
+      phaseShortcuts.push({
+        key: String(i + 1),
+        action: () => navigatePhase(p),
+      });
+    }
+  });
+  keyboard.setShortcuts(phaseShortcuts);
 }
 
 // Initialize

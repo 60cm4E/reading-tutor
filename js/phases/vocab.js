@@ -3,6 +3,7 @@ import { tts } from '../tts.js';
 import { playCorrect, playWrong, playStar } from '../sfx.js';
 import { showConfetti, showToast, shuffleArray, delay } from '../utils.js';
 import { getPhonicsForReading } from '../data.js';
+import { keyboard, renderShortcutHints } from '../keyboard.js';
 
 export function renderVocab(container, ctx) {
   const { navigateTo, store, reading, subPhase } = ctx;
@@ -46,10 +47,14 @@ function renderPhonics(container, ctx) {
           <div class="progress-bar-fill" style="width: ${((currentIdx + 1) / phonicsData.length) * 100}%;"></div>
         </div>
         <div class="phonics-card-wrapper">
-          <div class="phonics-zone phonics-zone-letter">
+          <div class="phonics-zone phonics-zone-letter" id="zone-letter">
             <div class="phonics-letter">${p.upper}</div>
             <div class="phonics-letter-lower">${p.lower}</div>
             <div class="phonics-sound">${p.sound}</div>
+            <button class="phonics-speak-btn phonics-speak-btn-letter" id="speak-letter" aria-label="알파벳 소리 듣기">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07"/></svg>
+              <span>소리 듣기</span>
+            </button>
           </div>
           <div class="phonics-zone phonics-zone-word" id="zone-word">
             <span style="font-size: 0.8rem; color: var(--color-text-light); display: block; margin-bottom: 4px;">예시 단어</span>
@@ -72,8 +77,29 @@ function renderPhonics(container, ctx) {
         <div class="phonics-dots">
           ${phonicsData.map((_, i) => `<div class="phonics-dot ${i === currentIdx ? 'active' : ''}"></div>`).join('')}
         </div>
+        ${renderShortcutHints([
+          { keyLabel: '←', description: '이전' },
+          { keyLabel: '→', description: '다음' },
+          { keyLabel: 'S', description: '알파벳 소리' },
+          { keyLabel: 'W', description: '단어 발음' },
+        ])}
       </div>
     `;
+
+    // Letter zone click -> speak phonics sound
+    const zoneLetterEl = document.getElementById('zone-letter');
+    const speakLetterBtn = document.getElementById('speak-letter');
+
+    function speakLetterSound() {
+      speakLetterBtn.classList.add('speaking');
+      tts.speakPhonicsSound(p.ttsSound).then(() => speakLetterBtn.classList.remove('speaking'));
+    }
+
+    zoneLetterEl?.addEventListener('click', (e) => {
+      if (e.target.closest('#speak-letter')) return;
+      speakLetterSound();
+    });
+    speakLetterBtn?.addEventListener('click', speakLetterSound);
 
     // Word zone click -> speak example word
     const zoneWordEl = document.getElementById('zone-word');
@@ -90,19 +116,30 @@ function renderPhonics(container, ctx) {
     });
     speakWordBtn?.addEventListener('click', speakExampleWord);
 
-    document.getElementById('phonics-prev')?.addEventListener('click', () => {
-      currentIdx--;
-      render();
-    });
-
-    document.getElementById('phonics-next')?.addEventListener('click', () => {
+    function goPrev() {
+      if (currentIdx > 0) { currentIdx--; render(); }
+    }
+    function goNext() {
       if (currentIdx < phonicsData.length - 1) {
         currentIdx++;
         render();
       } else {
         navigateTo('vocab', { reading, subPhase: 'cards' });
       }
-    });
+    }
+
+    document.getElementById('phonics-prev')?.addEventListener('click', goPrev);
+    document.getElementById('phonics-next')?.addEventListener('click', goNext);
+
+    // Keyboard shortcuts
+    keyboard.setShortcuts([
+      { key: 'ArrowLeft', action: goPrev, description: '이전' },
+      { key: 'ArrowRight', action: goNext, description: '다음' },
+      { key: 'Enter', action: goNext, description: '다음' },
+      { key: 's', action: speakLetterSound, description: '알파벳 소리' },
+      { key: 'w', action: speakExampleWord, description: '단어 발음' },
+      { key: 'Space', action: speakLetterSound, description: '소리 듣기' },
+    ]);
   }
 
   render();
@@ -144,35 +181,51 @@ function renderVocabCards(container, ctx) {
           ${currentIdx > 0 ? '<button class="btn btn-secondary" id="vocab-prev">◀ 이전</button>' : ''}
           <button class="btn btn-primary" id="vocab-next">${currentIdx < vocab.length - 1 ? '다음 ▶' : '뜻 테스트 시작 ✏️'}</button>
         </div>
+        ${renderShortcutHints([
+          { keyLabel: '←', description: '이전' },
+          { keyLabel: '→', description: '다음' },
+          { keyLabel: 'Space', description: '발음 듣기' },
+        ])}
       </div>
     `;
 
-    // TTS
-    document.getElementById('speak-word')?.addEventListener('click', () => {
+    function speakWord() {
       const btn = document.getElementById('speak-word');
       btn.classList.add('speaking');
       tts.speakWord(v.word).then(() => btn.classList.remove('speaking'));
-    });
+    }
 
-    // Card click to hear word (no auto-speak — mobile requires user gesture)
+    // TTS
+    document.getElementById('speak-word')?.addEventListener('click', speakWord);
+
+    // Card click to hear word
     document.getElementById('vocab-card')?.addEventListener('click', (e) => {
       if (e.target.closest('#speak-word')) return;
       tts.speakWord(v.word);
     });
 
-    document.getElementById('vocab-prev')?.addEventListener('click', () => {
-      currentIdx--;
-      render();
-    });
-
-    document.getElementById('vocab-next')?.addEventListener('click', () => {
+    function goPrev() {
+      if (currentIdx > 0) { currentIdx--; render(); }
+    }
+    function goNext() {
       if (currentIdx < vocab.length - 1) {
         currentIdx++;
         render();
       } else {
         navigateTo('vocab', { reading, subPhase: 'meaningTest' });
       }
-    });
+    }
+
+    document.getElementById('vocab-prev')?.addEventListener('click', goPrev);
+    document.getElementById('vocab-next')?.addEventListener('click', goNext);
+
+    // Keyboard shortcuts
+    keyboard.setShortcuts([
+      { key: 'ArrowLeft', action: goPrev, description: '이전' },
+      { key: 'ArrowRight', action: goNext, description: '다음' },
+      { key: 'Enter', action: goNext, description: '다음' },
+      { key: 'Space', action: speakWord, description: '발음 듣기' },
+    ]);
   }
 
   render();
@@ -209,6 +262,7 @@ function renderMeaningTest(container, ctx) {
       // All done
       const score = Math.round((totalCorrect / totalAttempted) * 100);
       store.setScore(reading.id, 'vocabMeaning', score);
+      keyboard.clearShortcuts();
       renderTestComplete(container, ctx, score, '뜻 테스트', () => {
         navigateTo('vocab', { reading, subPhase: 'spellingTest' });
       });
@@ -240,40 +294,63 @@ function renderMeaningTest(container, ctx) {
             </button>
           `).join('')}
         </div>
+        ${renderShortcutHints([
+          { keyLabel: '1~4', description: '답 선택' },
+          { keyLabel: 'Space', description: '발음 듣기' },
+        ])}
       </div>
     `;
 
     const buttons = container.querySelectorAll('.choice-btn');
-    buttons.forEach(btn => {
-      btn.addEventListener('click', async () => {
-        buttons.forEach(b => b.disabled = true);
-        totalAttempted++;
-        const isCorrect = btn.dataset.ans === 'true';
+    let answered = false;
 
-        if (isCorrect) {
-          btn.classList.add('correct');
-          totalCorrect++;
-          showToast('🎉 정답이에요!');
-          playCorrect();
-          tts.speakWord(current.word);
-          await delay(1200);
-          currentIdx++;
-          renderQuestion();
-        } else {
-          btn.classList.add('wrong');
-          // Show correct answer
-          buttons.forEach(b => {
-            if (b.dataset.ans === 'true') b.classList.add('correct');
-          });
-          wrongQueue.push(current);
-          playWrong();
-          showToast('😢 다시 도전해봐요!');
-          await delay(1800);
-          currentIdx++;
-          renderQuestion();
-        }
-      });
+    async function selectChoice(idx) {
+      if (answered || idx >= buttons.length) return;
+      answered = true;
+      const btn = buttons[idx];
+      buttons.forEach(b => b.disabled = true);
+      totalAttempted++;
+      const isCorrect = btn.dataset.ans === 'true';
+
+      if (isCorrect) {
+        btn.classList.add('correct');
+        totalCorrect++;
+        showToast('🎉 정답이에요!');
+        playCorrect();
+        tts.speakWord(current.word);
+        await delay(1200);
+        currentIdx++;
+        renderQuestion();
+      } else {
+        btn.classList.add('wrong');
+        buttons.forEach(b => {
+          if (b.dataset.ans === 'true') b.classList.add('correct');
+        });
+        wrongQueue.push(current);
+        playWrong();
+        showToast('😢 다시 도전해봐요!');
+        await delay(1800);
+        currentIdx++;
+        renderQuestion();
+      }
+    }
+
+    buttons.forEach((btn, i) => {
+      btn.addEventListener('click', () => selectChoice(i));
     });
+
+    // Keyboard shortcuts
+    keyboard.setShortcuts([
+      { key: '1', action: () => selectChoice(0) },
+      { key: '2', action: () => selectChoice(1) },
+      { key: '3', action: () => selectChoice(2) },
+      { key: '4', action: () => selectChoice(3) },
+      { key: 'a', action: () => selectChoice(0) },
+      { key: 'b', action: () => selectChoice(1) },
+      { key: 'c', action: () => selectChoice(2) },
+      { key: 'd', action: () => selectChoice(3) },
+      { key: 'Space', action: () => tts.speakWord(current.word) },
+    ]);
   }
 
   renderQuestion();
@@ -308,6 +385,7 @@ function renderSpellingTest(container, ctx) {
       store.markPhaseComplete(reading.id, 'vocab');
       store.addLearnedWords(reading.vocabulary.map(v => v.word));
       store.addStars(3);
+      keyboard.clearShortcuts();
       renderTestComplete(container, ctx, score, '스펠링 테스트', () => {
         navigateTo('vocab', { reading, subPhase: 'sentenceBuild' });
       }, true);
@@ -381,6 +459,12 @@ function renderSpellingTest(container, ctx) {
             <button class="key-btn key-backspace" id="key-backspace">⌫</button>
           </div>
         </div>
+        ${renderShortcutHints([
+          { keyLabel: 'A~Z', description: '글자 입력' },
+          { keyLabel: '⌫', description: '지우기' },
+          { keyLabel: 'Enter', description: '확인' },
+          { keyLabel: 'Space', description: '발음 듣기' },
+        ])}
       </div>
     `;
 
@@ -397,7 +481,7 @@ function renderSpellingTest(container, ctx) {
       renderSpelling(); // Re-render with hint
     });
 
-    // Keyboard
+    // Keyboard (virtual)
     container.querySelectorAll('.key-btn[data-key]').forEach(key => {
       key.addEventListener('click', () => {
         const nextEmpty = userInput.findIndex((ch, i) => ch === '' && !revealedIndices.includes(i));
@@ -483,6 +567,12 @@ function renderSpellingTest(container, ctx) {
         e.preventDefault();
         doSubmit();
       }
+
+      // Space = hear word
+      if (e.key === ' ') {
+        e.preventDefault();
+        tts.speakWord(current.word);
+      }
     }
 
     // Remove previous listener if any, then add new one
@@ -491,6 +581,9 @@ function renderSpellingTest(container, ctx) {
     }
     window._spellingKeydownHandler = handleKeydown;
     document.addEventListener('keydown', handleKeydown);
+
+    // Clear keyboard manager shortcuts (spelling has its own keydown handler)
+    keyboard.clearShortcuts();
   }
 
   renderSpelling();
@@ -516,6 +609,7 @@ function renderSentenceBuild(container, ctx) {
       store.markPhaseComplete(reading.id, 'sentenceBuild');
       store.addStars(2);
       showConfetti();
+      keyboard.clearShortcuts();
       container.innerHTML = `
         <div class="completion-screen">
           <div class="completion-trophy">🧩</div>
@@ -528,11 +622,14 @@ function renderSentenceBuild(container, ctx) {
           <div class="completion-actions">
             <button class="btn btn-primary btn-block" id="go-next">본문 읽기로 가기 📚</button>
           </div>
+          ${renderShortcutHints([
+            { keyLabel: 'Enter', description: '다음으로' },
+          ])}
         </div>
       `;
-      document.getElementById('go-next')?.addEventListener('click', () => {
-        navigateTo('reading-phases', { reading });
-      });
+      const goNextFn = () => navigateTo('reading-phases', { reading });
+      document.getElementById('go-next')?.addEventListener('click', goNextFn);
+      keyboard.setShortcuts([{ key: 'Enter', action: goNextFn }]);
       return;
     }
 
@@ -569,6 +666,12 @@ function renderSentenceBuild(container, ctx) {
           <button class="btn btn-primary" id="check-sentence" ${selectedWords.length < sent.words.length ? 'disabled' : ''}>확인하기 ✓</button>
         </div>
         <div id="sentence-result"></div>
+        ${renderShortcutHints([
+          { keyLabel: '1~' + shuffledWords.length, description: '단어 선택' },
+          { keyLabel: 'Enter', description: '확인' },
+          { keyLabel: '⌫', description: '마지막 단어 제거' },
+          { keyLabel: 'R', description: '다시하기' },
+        ])}
       </div>
     `;
 
@@ -599,21 +702,21 @@ function renderSentenceBuild(container, ctx) {
     container.querySelectorAll('.sentence-slot').forEach(slot => {
       slot.addEventListener('click', () => {
         const idx = parseInt(slot.dataset.idx);
-        const removedWord = selectedWords[idx];
         selectedWords.splice(idx, 1);
-        // Un-use the word block
         renderSentenceUI(sent, shuffledWords);
       });
     });
 
     // Reset
-    document.getElementById('reset-sentence')?.addEventListener('click', () => {
+    function doReset() {
       selectedWords = [];
       renderSentenceUI(sent, shuffledWords);
-    });
+    }
+    document.getElementById('reset-sentence')?.addEventListener('click', doReset);
 
     // Check
-    document.getElementById('check-sentence')?.addEventListener('click', async () => {
+    async function doCheck() {
+      if (selectedWords.length < sent.words.length) return;
       const answer = selectedWords.join(' ');
       const correct = sent.words.join(' ');
       const resultDiv = document.getElementById('sentence-result');
@@ -640,7 +743,39 @@ function renderSentenceBuild(container, ctx) {
         selectedWords = [];
         renderSentenceUI(sent, shuffledWords);
       }
+    }
+    document.getElementById('check-sentence')?.addEventListener('click', doCheck);
+
+    // Remove last word
+    function removeLastWord() {
+      if (selectedWords.length > 0) {
+        selectedWords.pop();
+        renderSentenceUI(sent, shuffledWords);
+      }
+    }
+
+    // Keyboard shortcuts
+    const shortcuts = [
+      { key: 'Enter', action: doCheck, description: '확인' },
+      { key: 'Backspace', action: removeLastWord, description: '마지막 단어 제거' },
+      { key: 'r', action: doReset, description: '다시하기' },
+    ];
+    // Number keys for word selection
+    shuffledWords.forEach((w, i) => {
+      if (i < 9) {
+        shortcuts.push({
+          key: String(i + 1),
+          action: () => {
+            if (!usedIndices.has(i)) {
+              selectedWords.push(w);
+              usedIndices.add(i);
+              renderSentenceUI(sent, shuffledWords);
+            }
+          }
+        });
+      }
     });
+    keyboard.setShortcuts(shortcuts);
   }
 
   render();
@@ -667,8 +802,12 @@ function renderTestComplete(container, ctx, score, testName, onNext, showStars =
         </div>
       ` : ''}
       <button class="btn btn-primary btn-lg btn-block" id="next-phase" style="margin-top: 16px;">다음으로 ▶</button>
+      ${renderShortcutHints([
+        { keyLabel: 'Enter', description: '다음으로' },
+      ])}
     </div>
   `;
 
   document.getElementById('next-phase')?.addEventListener('click', onNext);
+  keyboard.setShortcuts([{ key: 'Enter', action: onNext }]);
 }

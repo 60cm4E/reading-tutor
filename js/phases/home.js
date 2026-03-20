@@ -1,5 +1,6 @@
 // ===== Home Screen =====
 import { CONTENT_DATA } from '../data.js';
+import { keyboard, renderShortcutHints } from '../keyboard.js';
 
 export function renderHome(container, ctx) {
   const { navigateTo, store } = ctx;
@@ -65,11 +66,15 @@ export function renderHome(container, ctx) {
           관리자
         </button>
       </div>
+
+      ${renderShortcutHints([
+        { keyLabel: '1~' + CONTENT_DATA.sections.length, description: '섹션 선택' },
+      ])}
     </div>
   `;
 
   // Bind section clicks
-  CONTENT_DATA.sections.forEach(section => {
+  CONTENT_DATA.sections.forEach((section, i) => {
     document.getElementById(`section-${section.id}`)?.addEventListener('click', () => {
       navigateTo('section', { section });
     });
@@ -79,6 +84,18 @@ export function renderHome(container, ctx) {
   document.getElementById('nav-admin')?.addEventListener('click', () => {
     navigateTo('admin');
   });
+
+  // Keyboard shortcuts
+  const shortcuts = [];
+  CONTENT_DATA.sections.forEach((section, i) => {
+    if (i < 9) {
+      shortcuts.push({
+        key: String(i + 1),
+        action: () => navigateTo('section', { section }),
+      });
+    }
+  });
+  keyboard.setShortcuts(shortcuts);
 }
 
 function renderSectionDetail(container, ctx) {
@@ -110,12 +127,28 @@ function renderSectionDetail(container, ctx) {
           `;
         }).join('')}
       </div>
+
+      ${renderShortcutHints([
+        { keyLabel: '1~' + section.readings.length, description: '읽기 선택' },
+      ])}
     </div>
   `;
 
-  section.readings.forEach(reading => {
+  section.readings.forEach((reading, i) => {
     document.getElementById(`reading-${reading.id}`)?.addEventListener('click', () => {
       navigateTo('reading-phases', { reading });
     });
   });
+
+  // Keyboard shortcuts
+  const shortcuts = [];
+  section.readings.forEach((reading, i) => {
+    if (i < 9) {
+      shortcuts.push({
+        key: String(i + 1),
+        action: () => navigateTo('reading-phases', { reading }),
+      });
+    }
+  });
+  keyboard.setShortcuts(shortcuts);
 }

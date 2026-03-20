@@ -1,6 +1,7 @@
 // ===== Phase 3 & 4: Quiz & Review =====
 import { showConfetti, showToast, delay } from '../utils.js';
 import { playCorrect, playWrong, playStar } from '../sfx.js';
+import { keyboard, renderShortcutHints } from '../keyboard.js';
 
 export function renderQuiz(container, ctx) {
   const { navigateTo, store, reading, reviewMode } = ctx;
@@ -37,7 +38,6 @@ export function renderQuiz(container, ctx) {
 
     // In review, progressive hint: reduce choices
     if (reviewMode && currentHintLevel >= 2) {
-      // Show only 2 choices: correct + 1 wrong
       const correctChoice = q.choices[q.answer];
       const wrongChoices = q.choices.filter((_, i) => i !== q.answer);
       const oneWrong = wrongChoices[Math.floor(Math.random() * wrongChoices.length)];
@@ -81,53 +81,80 @@ export function renderQuiz(container, ctx) {
             </button>
           `).join('')}
         </div>
+
+        ${renderShortcutHints([
+          { keyLabel: '1~' + choices.length, description: '답 선택' },
+          { keyLabel: 'H', description: '힌트 보기' },
+        ])}
       </div>
     `;
 
     // Hint
-    document.getElementById('show-hint')?.addEventListener('click', () => {
-      hintUsed[q.originalIdx] = true;
-      renderQuestion();
-    });
+    function showHint() {
+      if (!hintUsed[q.originalIdx]) {
+        hintUsed[q.originalIdx] = true;
+        renderQuestion();
+      }
+    }
+    document.getElementById('show-hint')?.addEventListener('click', showHint);
 
     // Choice clicks
     const buttons = container.querySelectorAll('.choice-btn');
-    buttons.forEach(btn => {
-      btn.addEventListener('click', async () => {
-        buttons.forEach(b => b.disabled = true);
-        const isCorrect = btn.dataset.correct === 'true';
+    let answered = false;
 
-        if (isCorrect) {
-          btn.classList.add('correct');
-          correctCount++;
-          playCorrect();
-          showToast('🎉 정답이에요!');
-          await delay(1200);
-          currentIdx++;
-          renderQuestion();
-        } else {
-          btn.classList.add('wrong');
-          buttons.forEach(b => {
-            if (b.dataset.correct === 'true') b.classList.add('correct');
-          });
-          if (!reviewMode) wrongIndices.push(q.originalIdx);
-          else {
-            // In review: increase hint level and re-add to queue
-            hintLevel[q.originalIdx] = (hintLevel[q.originalIdx] || 0) + 1;
-            if (hintLevel[q.originalIdx] < 3) {
-              questions.push(q); // Re-try later
-            } else {
-              correctCount++; // After 3 tries, just pass
-            }
+    async function selectChoice(idx) {
+      if (answered || idx >= buttons.length) return;
+      answered = true;
+      const btn = buttons[idx];
+      buttons.forEach(b => b.disabled = true);
+      const isCorrect = btn.dataset.correct === 'true';
+
+      if (isCorrect) {
+        btn.classList.add('correct');
+        correctCount++;
+        playCorrect();
+        showToast('🎉 정답이에요!');
+        await delay(1200);
+        currentIdx++;
+        renderQuestion();
+      } else {
+        btn.classList.add('wrong');
+        buttons.forEach(b => {
+          if (b.dataset.correct === 'true') b.classList.add('correct');
+        });
+        if (!reviewMode) wrongIndices.push(q.originalIdx);
+        else {
+          hintLevel[q.originalIdx] = (hintLevel[q.originalIdx] || 0) + 1;
+          if (hintLevel[q.originalIdx] < 3) {
+            questions.push(q);
+          } else {
+            correctCount++;
           }
-          playWrong();
-          showToast(reviewMode ? '힌트를 더 줄게요! 💡' : '다시 풀어볼 수 있어요! 💪');
-          await delay(1800);
-          currentIdx++;
-          renderQuestion();
         }
-      });
+        playWrong();
+        showToast(reviewMode ? '힌트를 더 줄게요! 💡' : '다시 풀어볼 수 있어요! 💪');
+        await delay(1800);
+        currentIdx++;
+        renderQuestion();
+      }
+    }
+
+    buttons.forEach((btn, i) => {
+      btn.addEventListener('click', () => selectChoice(i));
     });
+
+    // Keyboard shortcuts
+    const shortcuts = [
+      { key: 'h', action: showHint },
+    ];
+    choices.forEach((_, i) => {
+      shortcuts.push({ key: String(i + 1), action: () => selectChoice(i) });
+    });
+    // A, B, C, D keys
+    choices.forEach((_, i) => {
+      shortcuts.push({ key: String.fromCharCode(97 + i), action: () => selectChoice(i) });
+    });
+    keyboard.setShortcuts(shortcuts);
   }
 
   function showResults() {
@@ -186,16 +213,27 @@ export function renderQuiz(container, ctx) {
           ` : ''}
           <button class="btn btn-primary btn-block" id="go-back">돌아가기 🏠</button>
         </div>
+
+        ${renderShortcutHints([
+          { keyLabel: 'Enter', description: '돌아가기' },
+          ...(!reviewMode && wrongIndices.length > 0 ? [{ keyLabel: 'R', description: '다시 풀기' }] : []),
+        ])}
       </div>
     `;
 
-    document.getElementById('go-review')?.addEventListener('click', () => {
-      navigateTo('review', { reading });
-    });
+    function goBack() { navigateTo('reading-phases', { reading }); }
+    function goReview() { navigateTo('review', { reading }); }
 
-    document.getElementById('go-back')?.addEventListener('click', () => {
-      navigateTo('reading-phases', { reading });
-    });
+    document.getElementById('go-review')?.addEventListener('click', goReview);
+    document.getElementById('go-back')?.addEventListener('click', goBack);
+
+    const shortcuts = [
+      { key: 'Enter', action: goBack },
+    ];
+    if (!reviewMode && wrongIndices.length > 0) {
+      shortcuts.push({ key: 'r', action: goReview });
+    }
+    keyboard.setShortcuts(shortcuts);
   }
 
   renderQuestion();

@@ -105,6 +105,10 @@ class TTSManager {
     return this.speak(word, { rate: 0.65, pitch: 1.1 });
   }
 
+  speakPhonicsSound(sound) {
+    return this.speak(sound, { rate: 0.45, pitch: 1.0, volume: 1 });
+  }
+
   speakSentence(sentence) {
     return this.speak(sentence, { rate: 0.7, pitch: 1.05 });
   }

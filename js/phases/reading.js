@@ -1,6 +1,7 @@
 // ===== Phase 2: Reading Passage =====
 import { tts } from '../tts.js';
 import { showConfetti, showToast, delay } from '../utils.js';
+import { keyboard, renderShortcutHints } from '../keyboard.js';
 
 export function renderReading(container, ctx) {
   const { navigateTo, store, reading } = ctx;
@@ -43,6 +44,14 @@ export function renderReading(container, ctx) {
           </button>
           <p style="font-size: 0.8rem; color: var(--color-text-light); margin-top: 8px;">따라 말하기 모드: 문장을 길게 누르세요</p>
         </div>
+
+        ${renderShortcutHints([
+          { keyLabel: '↑/↓', description: '문장 선택' },
+          { keyLabel: 'Space', description: '선택 문장 듣기' },
+          { keyLabel: 'P', description: '전체 읽기' },
+          { keyLabel: 'T', description: '해석 보기/숨기기' },
+          { keyLabel: 'Enter', description: '읽기 완료' },
+        ])}
       </div>
     `;
 
@@ -80,7 +89,7 @@ export function renderReading(container, ctx) {
     });
 
     // Read all
-    document.getElementById('read-all')?.addEventListener('click', async () => {
+    async function doReadAll() {
       if (isReadingAll) return;
       isReadingAll = true;
       const btn = document.getElementById('read-all');
@@ -94,10 +103,11 @@ export function renderReading(container, ctx) {
 
       isReadingAll = false;
       if (btn) btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 전체 읽기`;
-    });
+    }
+    document.getElementById('read-all')?.addEventListener('click', doReadAll);
 
     // Toggle translations
-    document.getElementById('toggle-translate')?.addEventListener('click', () => {
+    function toggleTranslate() {
       showTranslations = !showTranslations;
       document.querySelectorAll('.sentence-translation').forEach(el => {
         el.classList.toggle('show', showTranslations);
@@ -105,18 +115,66 @@ export function renderReading(container, ctx) {
       const btn = document.getElementById('toggle-translate');
       btn.classList.toggle('active', showTranslations);
       btn.innerHTML = `🇰🇷 해석 ${showTranslations ? '숨기기' : '보기'}`;
-    });
+    }
+    document.getElementById('toggle-translate')?.addEventListener('click', toggleTranslate);
 
     // Finish
-    document.getElementById('finish-reading')?.addEventListener('click', () => {
+    function finishReading() {
       tts.stop();
       isReadingAll = false;
       store.markPhaseComplete(reading.id, 'reading');
       store.addStars(2);
       showConfetti();
       showToast('🎉 읽기 완료! ⭐+2');
+      keyboard.clearShortcuts();
       setTimeout(() => navigateTo('reading-phases', { reading }), 1500);
-    });
+    }
+    document.getElementById('finish-reading')?.addEventListener('click', finishReading);
+
+    // Keyboard shortcuts
+    function selectPrevSentence() {
+      if (currentSentenceIdx > 0) {
+        currentSentenceIdx--;
+      } else {
+        currentSentenceIdx = 0;
+      }
+      highlightSentence(currentSentenceIdx);
+    }
+
+    function selectNextSentence() {
+      if (currentSentenceIdx < passage.length - 1) {
+        currentSentenceIdx++;
+      } else {
+        currentSentenceIdx = passage.length - 1;
+      }
+      highlightSentence(currentSentenceIdx);
+    }
+
+    function speakCurrentSentence() {
+      if (currentSentenceIdx >= 0 && currentSentenceIdx < passage.length) {
+        readSentenceWithKaraoke(currentSentenceIdx);
+      }
+    }
+
+    keyboard.setShortcuts([
+      { key: 'ArrowUp', action: selectPrevSentence },
+      { key: 'ArrowDown', action: selectNextSentence },
+      { key: 'ArrowLeft', action: selectPrevSentence },
+      { key: 'ArrowRight', action: selectNextSentence },
+      { key: 'Space', action: speakCurrentSentence },
+      { key: 'p', action: doReadAll },
+      { key: 't', action: toggleTranslate },
+      { key: 'Enter', action: finishReading },
+    ]);
+  }
+
+  function highlightSentence(idx) {
+    document.querySelectorAll('.passage-sentence').forEach(el => el.classList.remove('active'));
+    const sentEl = document.getElementById(`sent-${idx}`);
+    if (sentEl) {
+      sentEl.classList.add('active');
+      sentEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   }
 
   async function readSentenceWithKaraoke(idx) {
@@ -175,8 +233,6 @@ export function renderReading(container, ctx) {
 
     document.body.appendChild(overlay);
 
-    // User must click "듣기" button to start (auto-play blocked on mobile)
-
     document.getElementById('shadow-listen')?.addEventListener('click', () => {
       tts.speakSentence(sent.en);
       document.getElementById('shadow-instruction').textContent = '잘 듣고 있어요...';
@@ -206,17 +262,25 @@ export function renderReading(container, ctx) {
       tts.speakSentence(sent.en);
     });
 
-    document.getElementById('shadow-close')?.addEventListener('click', () => {
+    function closeShadowing() {
       tts.stop();
       overlay.remove();
-    });
+    }
+
+    document.getElementById('shadow-close')?.addEventListener('click', closeShadowing);
 
     overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) {
-        tts.stop();
-        overlay.remove();
-      }
+      if (e.target === overlay) closeShadowing();
     });
+
+    // Escape to close shadowing
+    function handleEsc(e) {
+      if (e.key === 'Escape') {
+        closeShadowing();
+        document.removeEventListener('keydown', handleEsc);
+      }
+    }
+    document.addEventListener('keydown', handleEsc);
   }
 
   render();
