@@ -8,6 +8,7 @@ import { renderQuiz } from './phases/quiz.js';
 import { renderAdmin } from './admin/admin.js';
 import { renderReport } from './admin/report.js';
 import { keyboard, renderShortcutHints } from './keyboard.js';
+import { showToast } from './utils.js';
 
 const mainContent = document.getElementById('main-content');
 const headerTitle = document.getElementById('header-title');
@@ -32,6 +33,12 @@ function navigateTo(view, params = {}, pushToStack = true) {
   btnBack.style.display = navigationStack.length > 0 ? 'flex' : 'none';
   header.classList.remove('hidden');
   updateStars();
+
+  // Clean up spelling keydown handler when navigating away
+  if (window._spellingKeydownHandler) {
+    document.removeEventListener('keydown', window._spellingKeydownHandler);
+    window._spellingKeydownHandler = null;
+  }
 
   mainContent.innerHTML = '';
   mainContent.className = 'screen-enter';
@@ -146,8 +153,27 @@ function renderPhasePicker(container, params) {
     </div>
   `;
 
-  // Bind clicks
+  // Bind clicks with order enforcement
   function navigatePhase(p) {
+    // B3: Enforce learning order
+    const isLocked = (
+      (p.key === 'reading' && !completed.vocab) ||
+      (p.key === 'sentenceBuild' && !completed.vocab) ||
+      (p.key === 'quiz' && (!completed.vocab || !completed.reading)) ||
+      (p.key === 'review' && !completed.quiz)
+    );
+
+    if (isLocked) {
+      const prereqs = {
+        reading: '단어 학습',
+        sentenceBuild: '단어 학습',
+        quiz: '단어 학습과 본문 읽기',
+        review: '문제 풀기',
+      };
+      showToast(`🔒 ${prereqs[p.key] || '이전 단계'}를 먼저 완료해주세요!`);
+      return;
+    }
+
     switch (p.key) {
       case 'vocab':
         navigateTo('vocab', { reading, subPhase: 'phonics' });
@@ -172,7 +198,9 @@ function renderPhasePicker(container, params) {
   });
 
   // Keyboard shortcuts for phase selection
-  const phaseShortcuts = [];
+  const phaseShortcuts = [
+    { key: 'Escape', action: goBack },
+  ];
   phases.forEach((p, i) => {
     if (i < 9) {
       phaseShortcuts.push({

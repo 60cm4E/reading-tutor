@@ -104,6 +104,14 @@ export const store = {
     this.save();
   },
 
+  resetProgress(readingId) {
+    const state = this.getState();
+    delete state.completedPhases[readingId];
+    delete state.scores[readingId];
+    delete state.wrongAnswers[readingId];
+    this.save();
+  },
+
   isWordPreviouslyLearned(word) {
     return this.getState().learnedWords.includes(word.toLowerCase());
   },

@@ -31,7 +31,7 @@ export function renderHome(container, ctx) {
           const totalReadings = section.readings.length;
           const completedReadings = section.readings.filter(r => {
             const phases = store.getCompletedPhases(r.id);
-            return phases.vocab && phases.reading && phases.quiz;
+            return phases.vocab && phases.reading && phases.sentenceBuild && phases.quiz;
           }).length;
 
           return `
@@ -112,7 +112,7 @@ function renderSectionDetail(container, ctx) {
       <div class="reading-list" style="padding: 0;">
         ${section.readings.map((reading, i) => {
           const phases = store.getCompletedPhases(reading.id);
-          const allDone = phases.vocab && phases.reading && phases.quiz;
+          const allDone = phases.vocab && phases.reading && phases.sentenceBuild && phases.quiz;
 
           return `
             <div class="reading-item ${allDone ? 'completed' : ''}" id="reading-${reading.id}" style="animation: fadeInUp 0.4s ease ${i * 0.1}s forwards; opacity: 0;">

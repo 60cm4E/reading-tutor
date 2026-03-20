@@ -271,6 +271,22 @@
   cursor: pointer;
   transition: all var(--transition-fast);
   box-shadow: var(--shadow-sm);
+  position: relative;
+}
+
+.word-block-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 800;
+  margin-right: 6px;
+  vertical-align: middle;
 }
 
 .word-block:active {

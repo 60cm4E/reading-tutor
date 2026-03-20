@@ -89,6 +89,8 @@ export const CONTENT_DATA = {
           sentenceBuilding: [
             { words: ['You', 'can', 'see', 'me', 'in', 'the', 'sea.'], ko: '너는 바다에서 나를 볼 수 있어.' },
             { words: ['I', 'am', 'not', 'a', 'human.'], ko: '나는 사람이 아니야.' },
+            { words: ['The', 'wind', 'can', 'move', 'me.'], ko: '바람이 나를 움직일 수 있어.' },
+            { words: ['You', 'need', 'me.'], ko: '너는 내가 필요해.' },
           ]
         },
         {
@@ -174,6 +176,9 @@ export const CONTENT_DATA = {
           sentenceBuilding: [
             { words: ['Our', 'tongue', 'helps', 'us', 'taste', 'food.'], ko: '우리의 혀는 음식의 맛을 보는 것을 도와줘요.' },
             { words: ['We', 'learn', 'new', 'things', 'with', 'our', 'senses.'], ko: '우리는 감각으로 새로운 것들을 배워요.' },
+            { words: ['Our', 'eyes', 'help', 'us', 'see', 'things.'], ko: '우리의 눈은 사물을 보는 것을 도와줘요.' },
+            { words: ['We', 'hear', 'music', 'with', 'our', 'ears.'], ko: '우리는 귀로 음악을 들어요.' },
+            { words: ['We', 'smell', 'flowers', 'with', 'our', 'nose.'], ko: '우리는 코로 꽃 냄새를 맡아요.' },
           ]
         },
         {
@@ -184,7 +189,7 @@ export const CONTENT_DATA = {
           emoji: '🦙',
           vocabulary: [
             { word: 'llama', meaning: '라마', ipa: '/lɑ́ːmə/', image: '🦙', phonics: ['l','l','a','m','a'] },
-            { word: 'look like', meaning: '~처럼 보이다', ipa: '/lʊk laɪk/', image: '👀', phonics: ['l','o','o','k',' ','l','i','k','e'] },
+            { word: 'look like', meaning: '~처럼 보이다', ipa: '/lʊk laɪk/', image: '👀', phonics: ['l','o','o','k','l','i','k','e'] },
             { word: 'camel', meaning: '낙타', ipa: '/kǽməl/', image: '🐫', phonics: ['c','a','m','e','l'] },
             { word: 'hump', meaning: '혹', ipa: '/hʌmp/', image: '🐪', phonics: ['h','u','m','p'] },
             { word: 'head', meaning: '머리', ipa: '/hed/', image: '🗣️', phonics: ['h','e','a','d'] },
@@ -194,7 +199,7 @@ export const CONTENT_DATA = {
             { word: 'toenail', meaning: '발톱', ipa: '/tóʊneɪl/', image: '🦶', phonics: ['t','o','e','n','a','i','l'] },
             { word: 'live', meaning: '살다', ipa: '/lɪv/', image: '🏠', phonics: ['l','i','v','e'] },
             { word: 'walk', meaning: '걷다', ipa: '/wɔːk/', image: '🚶', phonics: ['w','a','l','k'] },
-            { word: 'up to', meaning: '~까지', ipa: '/ʌp tuː/', image: '⬆️', phonics: ['u','p',' ','t','o'] },
+            { word: 'up to', meaning: '~까지', ipa: '/ʌp tuː/', image: '⬆️', phonics: ['u','p','t','o'] },
             { word: 'without', meaning: '~없이', ipa: '/wɪðáʊt/', image: '🚫', phonics: ['w','i','t','h','o','u','t'] },
             { word: 'carry', meaning: '나르다, 운반하다', ipa: '/kǽri/', image: '📦', phonics: ['c','a','r','r','y'] },
             { word: 'heavy', meaning: '무거운', ipa: '/hévi/', image: '🏋️', phonics: ['h','e','a','v','y'] },
@@ -212,7 +217,7 @@ export const CONTENT_DATA = {
             { en: 'Llamas live in South America.', ko: '라마는 남아메리카에 살아요.' },
             { en: 'They walk up to 26 kilometers a day.', ko: '라마는 하루에 26킬로미터까지 걸어요.' },
             { en: 'They go a long time without water.', ko: '라마는 오랜 시간 물 없이 지내요.' },
-            { en: 'They carry heavy things for people.', ko: '라마는 사람들을 위해 무거운 것을 나르아요.' },
+            { en: 'They carry heavy things for people.', ko: '라마는 사람들을 위해 무거운 것을 날라요.' },
             { en: 'So they are very helpful to people!', ko: '그래서 라마는 사람들에게 매우 도움이 돼요!' },
           ],
           questions: [
@@ -243,7 +248,7 @@ export const CONTENT_DATA = {
             {
               text: '라마가 사람들에게 도움이 되는 이유는 무엇인가요?',
               type: 'inference',
-              choices: ['맛있는 음식을 줘서', '무거운 것을 나르아 줘서', '빠르게 달려서', '물을 만들어 줘서'],
+              choices: ['맛있는 음식을 줘서', '무거운 것을 날라 줘서', '빠르게 달려서', '물을 만들어 줘서'],
               answer: 1,
               hint: '"carry"와 "heavy"가 나오는 문장을 읽어보세요.',
               excerpt: 'They carry heavy things for people.'
@@ -252,6 +257,232 @@ export const CONTENT_DATA = {
           sentenceBuilding: [
             { words: ['Each', 'foot', 'has', 'two', 'toenails.'], ko: '각 발에는 두 개의 발톱이 있어요.' },
             { words: ['They', 'look', 'like', 'camels.'], ko: '라마는 낙타처럼 보여요.' },
+            { words: ['They', 'have', 'a', 'long', 'neck.'], ko: '라마는 긴 목을 가지고 있어요.' },
+            { words: ['Llamas', 'live', 'in', 'South', 'America.'], ko: '라마는 남아메리카에 살아요.' },
+          ]
+        }
+      ]
+    },
+    {
+      id: 'section-02',
+      title: 'Section 02',
+      theme: 'Food · Sports · Weather',
+      emoji: '🌟',
+      color: '#FF6B9D',
+      readings: [
+        {
+          id: 'r02-01',
+          sectionId: 'section-02',
+          title: 'My Favorite Food',
+          category: 'Food',
+          emoji: '🍕',
+          vocabulary: [
+            { word: 'favorite', meaning: '가장 좋아하는', ipa: '/ˈfeɪvərɪt/', image: '❤️', phonics: ['f','a','v','o','r','i','t','e'] },
+            { word: 'pizza', meaning: '피자', ipa: '/ˈpiːtsə/', image: '🍕', phonics: ['p','i','z','z','a'] },
+            { word: 'cheese', meaning: '치즈', ipa: '/tʃiːz/', image: '🧀', phonics: ['c','h','e','e','s','e'] },
+            { word: 'delicious', meaning: '맛있는', ipa: '/dɪˈlɪʃəs/', image: '😋', phonics: ['d','e','l','i','c','i','o','u','s'] },
+            { word: 'breakfast', meaning: '아침 식사', ipa: '/ˈbrekfəst/', image: '🥞', phonics: ['b','r','e','a','k','f','a','s','t'] },
+            { word: 'lunch', meaning: '점심', ipa: '/lʌntʃ/', image: '🍱', phonics: ['l','u','n','c','h'] },
+            { word: 'dinner', meaning: '저녁', ipa: '/ˈdɪnər/', image: '🍽️', phonics: ['d','i','n','n','e','r'] },
+            { word: 'cook', meaning: '요리하다', ipa: '/kʊk/', image: '👨‍🍳', phonics: ['c','o','o','k'] },
+            { word: 'rice', meaning: '밥', ipa: '/raɪs/', image: '🍚', phonics: ['r','i','c','e'] },
+            { word: 'soup', meaning: '수프', ipa: '/suːp/', image: '🍲', phonics: ['s','o','u','p'] },
+            { word: 'fruit', meaning: '과일', ipa: '/fruːt/', image: '🍎', phonics: ['f','r','u','i','t'] },
+            { word: 'healthy', meaning: '건강한', ipa: '/ˈhelθi/', image: '💪', phonics: ['h','e','a','l','t','h','y'] },
+          ],
+          passage: [
+            { en: 'I love food!', ko: '나는 음식을 좋아해요!' },
+            { en: 'My favorite food is pizza.', ko: '내가 가장 좋아하는 음식은 피자예요.' },
+            { en: 'Pizza has cheese on top.', ko: '피자 위에는 치즈가 있어요.' },
+            { en: 'It is delicious!', ko: '정말 맛있어요!' },
+            { en: 'I eat rice for breakfast.', ko: '나는 아침에 밥을 먹어요.' },
+            { en: 'I eat soup for lunch.', ko: '나는 점심에 수프를 먹어요.' },
+            { en: 'My mom cooks dinner every day.', ko: '엄마는 매일 저녁을 요리해요.' },
+            { en: 'I also eat fruit.', ko: '나는 과일도 먹어요.' },
+            { en: 'Fruit is healthy and sweet.', ko: '과일은 건강하고 달콤해요.' },
+            { en: 'I want to be a good cook someday!', ko: '나는 언젠가 훌륭한 요리사가 되고 싶어요!' },
+          ],
+          questions: [
+            {
+              text: '이 글쓴이가 가장 좋아하는 음식은 무엇인가요?',
+              type: 'detail',
+              choices: ['수프 (soup)', '피자 (pizza)', '밥 (rice)', '과일 (fruit)'],
+              answer: 1,
+              hint: '"favorite"\uac00 나오는 문장을 찾아보세요.',
+              excerpt: 'My favorite food is pizza.'
+            },
+            {
+              text: '아침에는 무엇을 먹나요?',
+              type: 'detail',
+              choices: ['피자', '수프', '밥', '과일'],
+              answer: 2,
+              hint: '"breakfast"가 나오는 문장을 확인해보세요.',
+              excerpt: 'I eat rice for breakfast.'
+            },
+            {
+              text: '누가 저녁을 요리하나요?',
+              type: 'detail',
+              choices: ['아빠', '엄마', '나', '친구'],
+              answer: 1,
+              hint: '"cook"과 "dinner"가 나오는 문장을 읽어보세요.',
+              excerpt: 'My mom cooks dinner every day.'
+            },
+            {
+              text: '과일에 대해 맞는 것은?',
+              type: 'detail',
+              choices: ['매워요', '건강하고 달콤해요', '믤4싸요', '못맛어요'],
+              answer: 1,
+              hint: '"fruit"가 나오는 문장들을 읽어보세요.',
+              excerpt: 'Fruit is healthy and sweet.'
+            },
+          ],
+          sentenceBuilding: [
+            { words: ['My', 'favorite', 'food', 'is', 'pizza.'], ko: '내가 가장 좋아하는 음식은 피자예요.' },
+            { words: ['Pizza', 'has', 'cheese', 'on', 'top.'], ko: '피자 위에는 치즈가 있어요.' },
+            { words: ['Fruit', 'is', 'healthy', 'and', 'sweet.'], ko: '과일은 건강하고 달콤해요.' },
+            { words: ['My', 'mom', 'cooks', 'dinner', 'every', 'day.'], ko: '엄마는 매일 저녁을 요리해요.' },
+          ]
+        },
+        {
+          id: 'r02-02',
+          sectionId: 'section-02',
+          title: 'Sports Day',
+          category: 'Sports',
+          emoji: '⚽',
+          vocabulary: [
+            { word: 'sports', meaning: '운동', ipa: '/spɔːrts/', image: '⚽', phonics: ['s','p','o','r','t','s'] },
+            { word: 'soccer', meaning: '축구', ipa: '/ˈsɑːkər/', image: '⚽', phonics: ['s','o','c','c','e','r'] },
+            { word: 'basketball', meaning: '농구', ipa: '/ˈbæskɪtbɔːl/', image: '🏀', phonics: ['b','a','s','k','e','t','b','a','l','l'] },
+            { word: 'run', meaning: '달리다', ipa: '/rʌn/', image: '🏃', phonics: ['r','u','n'] },
+            { word: 'fast', meaning: '빨리', ipa: '/fæst/', image: '💨', phonics: ['f','a','s','t'] },
+            { word: 'jump', meaning: '점프하다', ipa: '/dʒʌmp/', image: '🤸', phonics: ['j','u','m','p'] },
+            { word: 'team', meaning: '팀', ipa: '/tiːm/', image: '👥', phonics: ['t','e','a','m'] },
+            { word: 'win', meaning: '이기다', ipa: '/wɪn/', image: '🏆', phonics: ['w','i','n'] },
+            { word: 'practice', meaning: '연습하다', ipa: '/ˈpræktɪs/', image: '💪', phonics: ['p','r','a','c','t','i','c','e'] },
+            { word: 'every', meaning: '매, 모든', ipa: '/ˈevri/', image: '📅', phonics: ['e','v','e','r','y'] },
+          ],
+          passage: [
+            { en: 'I love sports!', ko: '나는 운동을 좋아해요!' },
+            { en: 'My favorite sport is soccer.', ko: '내가 가장 좋아하는 운동은 축구예요.' },
+            { en: 'I play soccer with my friends.', ko: '나는 친구들과 축구를 해요.' },
+            { en: 'I can run very fast.', ko: '나는 매우 빨리 달릴 수 있어요.' },
+            { en: 'I can jump high, too.', ko: '나는 높이 점프할 수도 있어요.' },
+            { en: 'We have a soccer team.', ko: '우리는 축구 팀이 있어요.' },
+            { en: 'We practice every day.', ko: '우리는 매일 연습해요.' },
+            { en: 'We want to win!', ko: '우리는 이기고 싶어요!' },
+            { en: 'I also like basketball.', ko: '나는 농구도 좋아해요.' },
+            { en: 'Sports make me happy!', ko: '운동은 나를 행복하게 해줘요!' },
+          ],
+          questions: [
+            {
+              text: '이 글쓴이가 가장 좋아하는 운동은?',
+              type: 'detail',
+              choices: ['농구', '축구', '야구', '탁구'],
+              answer: 1,
+              hint: '"favorite sport"가 나오는 문장을 찾아보세요.',
+              excerpt: 'My favorite sport is soccer.'
+            },
+            {
+              text: '우리 팀은 얼마나 자주 연습하나요?',
+              type: 'detail',
+              choices: ['주말마다', '매일', '한 달에 한 번', '일 년에 한 번'],
+              answer: 1,
+              hint: '"practice"와 "every"가 나오는 문장을 확인해보세요.',
+              excerpt: 'We practice every day.'
+            },
+            {
+              text: '글쓴이는 운동이 어떤 느낌을 주나요?',
+              type: 'inference',
+              choices: ['슬프게', '행복하게', '화나게', '무서게'],
+              answer: 1,
+              hint: '마지막 문장을 읽어보세요.',
+              excerpt: 'Sports make me happy!'
+            },
+            {
+              text: '글쓴이는 누구와 축구를 하나요?',
+              type: 'detail',
+              choices: ['가족', '친구들', '선생님', '혼자'],
+              answer: 1,
+              hint: '"play soccer with"가 나오는 문장을 확인해보세요.',
+              excerpt: 'I play soccer with my friends.'
+            },
+          ],
+          sentenceBuilding: [
+            { words: ['I', 'can', 'run', 'very', 'fast.'], ko: '나는 매우 빨리 달릴 수 있어요.' },
+            { words: ['We', 'practice', 'every', 'day.'], ko: '우리는 매일 연습해요.' },
+            { words: ['Sports', 'make', 'me', 'happy!'], ko: '운동은 나를 행복하게 해줘요!' },
+            { words: ['We', 'have', 'a', 'soccer', 'team.'], ko: '우리는 축구 팀이 있어요.' },
+          ]
+        },
+        {
+          id: 'r02-03',
+          sectionId: 'section-02',
+          title: 'The Weather',
+          category: 'Weather',
+          emoji: '☀️',
+          vocabulary: [
+            { word: 'weather', meaning: '날씨', ipa: '/ˈweðər/', image: '☀️', phonics: ['w','e','a','t','h','e','r'] },
+            { word: 'sunny', meaning: '해가 나는', ipa: '/ˈsʌni/', image: '☀️', phonics: ['s','u','n','n','y'] },
+            { word: 'rainy', meaning: '비가 오는', ipa: '/ˈreɪni/', image: '🌧️', phonics: ['r','a','i','n','y'] },
+            { word: 'cloud', meaning: '구름', ipa: '/klaʊd/', image: '☁️', phonics: ['c','l','o','u','d'] },
+            { word: 'snow', meaning: '눈', ipa: '/snoʊ/', image: '❄️', phonics: ['s','n','o','w'] },
+            { word: 'cold', meaning: '추운', ipa: '/koʊld/', image: '🥶', phonics: ['c','o','l','d'] },
+            { word: 'hot', meaning: '더운', ipa: '/hɑːt/', image: '🥵', phonics: ['h','o','t'] },
+            { word: 'umbrella', meaning: '우산', ipa: '/ʌmˈbrelə/', image: '☂️', phonics: ['u','m','b','r','e','l','l','a'] },
+            { word: 'outside', meaning: '바깥', ipa: '/ˈaʊtsɑɪd/', image: '🏡', phonics: ['o','u','t','s','i','d','e'] },
+            { word: 'season', meaning: '계절', ipa: '/ˈsiːzən/', image: '🍃', phonics: ['s','e','a','s','o','n'] },
+          ],
+          passage: [
+            { en: 'Today is a sunny day.', ko: '오늘은 해가 나는 날이에요.' },
+            { en: 'The sky is blue.', ko: '하늘이 파란색이에요.' },
+            { en: 'I like sunny days.', ko: '나는 해가 나는 날을 좋아해요.' },
+            { en: 'Sometimes it is rainy.', ko: '때때로 비가 와요.' },
+            { en: 'I need an umbrella on rainy days.', ko: '비 오는 날에는 우산이 필요해요.' },
+            { en: 'In winter, it is cold.', ko: '겨울에는 추워요.' },
+            { en: 'Sometimes it snows.', ko: '때때로 눈이 와요.' },
+            { en: 'In summer, it is hot.', ko: '여름에는 더워요.' },
+            { en: 'I like to play outside.', ko: '나는 바깥에서 노는 것을 좋아해요.' },
+            { en: 'Every season has different weather.', ko: '매 계절마다 다른 날씨가 있어요.' },
+          ],
+          questions: [
+            {
+              text: '오늘 날씨는 어떤가요?',
+              type: 'detail',
+              choices: ['비가 와요', '해가 나요', '눈이 와요', '구름이 끼었어요'],
+              answer: 1,
+              hint: '첫 문장을 읽어보세요.',
+              excerpt: 'Today is a sunny day.'
+            },
+            {
+              text: '비 오는 날에 필요한 것은?',
+              type: 'detail',
+              choices: ['모자', '우산', '선글라스', '장갑'],
+              answer: 1,
+              hint: '"umbrella"가 나오는 문장을 찾아보세요.',
+              excerpt: 'I need an umbrella on rainy days.'
+            },
+            {
+              text: '여름에는 날씨가 어떤가요?',
+              type: 'detail',
+              choices: ['추워요', '더워요', '바람이 불어요', '눈이 와요'],
+              answer: 1,
+              hint: '"summer"가 나오는 문장을 확인해보세요.',
+              excerpt: 'In summer, it is hot.'
+            },
+            {
+              text: '이 글의 주제는 무엇인가요?',
+              type: 'main-idea',
+              choices: ['음식에 대해', '날씨와 계절에 대해', '운동에 대해', '가족에 대해'],
+              answer: 1,
+              hint: '글에서 가장 많이 나오는 단어가 무엇인지 생각해보세요.',
+              excerpt: 'Every season has different weather.'
+            },
+          ],
+          sentenceBuilding: [
+            { words: ['Today', 'is', 'a', 'sunny', 'day.'], ko: '오늘은 해가 나는 날이에요.' },
+            { words: ['In', 'winter,', 'it', 'is', 'cold.'], ko: '겨울에는 추워요.' },
+            { words: ['I', 'like', 'to', 'play', 'outside.'], ko: '나는 바깥에서 노는 것을 좋아해요.' },
+            { words: ['I', 'need', 'an', 'umbrella.'], ko: '나는 우산이 필요해요.' },
           ]
         }
       ]

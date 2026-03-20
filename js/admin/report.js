@@ -31,6 +31,7 @@ export function renderReport(container, ctx) {
         <div style="text-align: center; padding: 16px 0;">
           <div style="font-size: 0.85rem; color: var(--color-text-light);">모은 별</div>
           <div style="font-size: 2rem; font-weight: 900; color: var(--color-accent);">⭐ ${store.getStars()}</div>
+          <div style="font-size: 0.7rem; color: var(--color-text-muted); margin-top: 4px;">※ 이 기기의 전체 학습 별 합계</div>
         </div>
 
         ${assignedReadings.length === 0 ? `

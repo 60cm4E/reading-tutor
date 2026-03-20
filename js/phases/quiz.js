@@ -127,13 +127,26 @@ export function renderQuiz(container, ctx) {
           hintLevel[q.originalIdx] = (hintLevel[q.originalIdx] || 0) + 1;
           if (hintLevel[q.originalIdx] < 3) {
             questions.push(q);
-          } else {
-            correctCount++;
           }
+          // 3번 틀린 문제는 더 이상 반복하지 않지만, 정답으로 카운트하지 않음
         }
         playWrong();
-        showToast(reviewMode ? '힌트를 더 줄게요! 💡' : '다시 풀어볼 수 있어요! 💪');
-        await delay(1800);
+        // C7: Auto-show hint after wrong answer
+        const hintArea = document.getElementById('hint-area');
+        if (!hintArea) {
+          const showHintBtn = document.getElementById('show-hint');
+          if (showHintBtn) {
+            showHintBtn.outerHTML = `
+              <div class="hint-area" id="hint-area" style="animation: fadeIn 0.3s ease;">
+                <div class="hint-label">💡 힌트</div>
+                <div class="hint-text">${q.hint}</div>
+                ${q.excerpt ? `<div style="margin-top: 8px; padding: 8px; background: rgba(108,99,255,0.05); border-radius: 8px; font-family: var(--font-en); font-size: 0.9rem;">📖 ${q.excerpt}</div>` : ''}
+              </div>
+            `;
+          }
+        }
+        showToast(reviewMode ? '힌트를 더 줄게요! 💡' : '힌트를 확인해보세요! 💡');
+        await delay(2500);
         currentIdx++;
         renderQuestion();
       }

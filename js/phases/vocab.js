@@ -8,6 +8,12 @@ import { keyboard, renderShortcutHints } from '../keyboard.js';
 export function renderVocab(container, ctx) {
   const { navigateTo, store, reading, subPhase } = ctx;
 
+  // Clean up any previous spelling keydown handler when entering vocab view
+  if (window._spellingKeydownHandler) {
+    document.removeEventListener('keydown', window._spellingKeydownHandler);
+    window._spellingKeydownHandler = null;
+  }
+
   switch (subPhase) {
     case 'phonics':
       renderPhonics(container, ctx);
@@ -124,7 +130,8 @@ function renderPhonics(container, ctx) {
         currentIdx++;
         render();
       } else {
-        navigateTo('vocab', { reading, subPhase: 'cards' });
+        // C8: Mini phonics quiz before moving to cards
+        renderPhonicsQuiz(container, ctx, phonicsData);
       }
     }
 
@@ -143,6 +150,115 @@ function renderPhonics(container, ctx) {
   }
 
   render();
+}
+
+// ===== Phonics Mini Quiz (C8) =====
+function renderPhonicsQuiz(container, ctx, phonicsData) {
+  const { navigateTo, reading } = ctx;
+  const quizItems = shuffleArray([...phonicsData]).slice(0, Math.min(3, phonicsData.length));
+  let qIdx = 0;
+  let score = 0;
+
+  function renderQ() {
+    if (qIdx >= quizItems.length) {
+      // Quiz done
+      container.innerHTML = `
+        <div style="text-align: center; padding: 40px 20px;">
+          <div style="font-size: 3rem; margin-bottom: 16px;">🎉</div>
+          <h2 style="font-weight: 800; color: var(--color-primary);">파닉스 퀴즈 완료!</h2>
+          <p style="font-size: 1.1rem; margin: 12px 0;">${score}/${quizItems.length} 정답</p>
+          <button class="btn btn-primary" id="go-cards" style="margin-top: 16px;">단어 학습 시작 📖</button>
+        </div>
+      `;
+      document.getElementById('go-cards')?.addEventListener('click', () => {
+        navigateTo('vocab', { reading, subPhase: 'cards' });
+      });
+      keyboard.setShortcuts([{ key: 'Enter', action: () => navigateTo('vocab', { reading, subPhase: 'cards' }) }]);
+      return;
+    }
+
+    const q = quizItems[qIdx];
+    // Generate 3 wrong choices + 1 correct
+    const allLetters = phonicsData.map(p => p.upper);
+    const wrongChoices = shuffleArray(allLetters.filter(l => l !== q.upper)).slice(0, 3);
+    const choices = shuffleArray([q.upper, ...wrongChoices]);
+
+    container.innerHTML = `
+      <div style="padding: 20px; text-align: center;">
+        <div style="margin-bottom: 8px;">
+          <span class="badge badge-primary">파닉스 퀴즈</span>
+          <span style="font-size: 0.8rem; color: var(--color-text-light); margin-left: 8px;">${qIdx + 1} / ${quizItems.length}</span>
+        </div>
+        <div class="progress-bar" style="margin: 0 0 24px;">
+          <div class="progress-bar-fill" style="width: ${(qIdx / quizItems.length) * 100}%;"></div>
+        </div>
+        <p style="font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">🔊 소리를 듣고 맞는 글자를 고르세요!</p>
+        <button class="btn btn-primary" id="play-sound" style="margin-bottom: 24px; font-size: 1.2rem; padding: 12px 32px;">
+          🔊 소리 듣기
+        </button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 300px; margin: 0 auto;">
+          ${choices.map((ch, i) => `
+            <button class="btn btn-secondary quiz-letter-btn" id="choice-${i}" data-letter="${ch}" style="font-size: 1.5rem; font-weight: 900; padding: 20px; font-family: var(--font-en);">
+              <span class="word-block-num" style="font-size: 0.7rem;">${i + 1}</span> ${ch}
+            </button>
+          `).join('')}
+        </div>
+        ${renderShortcutHints([
+          { keyLabel: 'Space', description: '소리 듣기' },
+          { keyLabel: '1~4', description: '답 선택' },
+        ])}
+      </div>
+    `;
+
+    function playQSound() {
+      tts.speakPhonicsSound(q.ttsSound);
+    }
+
+    // Auto-play sound
+    setTimeout(playQSound, 300);
+
+    document.getElementById('play-sound')?.addEventListener('click', playQSound);
+
+    choices.forEach((ch, i) => {
+      document.getElementById(`choice-${i}`)?.addEventListener('click', () => selectAnswer(ch, i));
+    });
+
+    function selectAnswer(ch, btnIdx) {
+      const btns = document.querySelectorAll('.quiz-letter-btn');
+      btns.forEach(b => { b.disabled = true; });
+
+      if (ch === q.upper) {
+        score++;
+        playCorrect();
+        document.getElementById(`choice-${btnIdx}`).style.background = 'var(--color-success)';
+        document.getElementById(`choice-${btnIdx}`).style.color = 'white';
+        showToast('정답! 🎉');
+      } else {
+        playWrong();
+        document.getElementById(`choice-${btnIdx}`).style.background = 'var(--color-danger)';
+        document.getElementById(`choice-${btnIdx}`).style.color = 'white';
+        // Highlight correct
+        btns.forEach(b => {
+          if (b.dataset.letter === q.upper) {
+            b.style.background = 'var(--color-success)';
+            b.style.color = 'white';
+          }
+        });
+        showToast(`정답은 ${q.upper} 이에요!`);
+      }
+      setTimeout(() => { qIdx++; renderQ(); }, 1200);
+    }
+
+    keyboard.setShortcuts([
+      { key: 'Space', action: playQSound },
+      { key: '1', action: () => selectAnswer(choices[0], 0) },
+      { key: '2', action: () => selectAnswer(choices[1], 1) },
+      { key: '3', action: () => selectAnswer(choices[2], 2) },
+      { key: '4', action: () => selectAnswer(choices[3], 3) },
+    ]);
+  }
+
+  renderQ();
 }
 
 // ===== Vocabulary Cards =====
@@ -658,7 +774,7 @@ function renderSentenceBuild(container, ctx) {
         </div>
         <div class="sentence-build-words" id="word-blocks">
           ${shuffledWords.map((w, i) => `
-            <button class="word-block ${selectedWords.includes(w) && selectedWords.indexOf(w) !== -1 ? 'used' : ''}" data-word="${w}" data-sidx="${i}" id="wb-${i}">${w}</button>
+            <button class="word-block" data-word="${w}" data-sidx="${i}" id="wb-${i}"><span class="word-block-num">${i + 1}</span>${w}</button>
           `).join('')}
         </div>
         <div style="text-align: center; margin-top: 16px;">

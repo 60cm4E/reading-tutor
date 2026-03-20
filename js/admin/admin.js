@@ -6,11 +6,12 @@ export function renderAdmin(container, ctx) {
   const { navigateTo, store } = ctx;
   const admin = store.getAdmin();
 
-  // Check if logged in (session)
-  if (!window._adminLoggedIn) {
+  // Check if logged in (session - persists across refresh)
+  if (!window._adminLoggedIn && !sessionStorage.getItem('adminLoggedIn')) {
     renderLogin(container, ctx);
     return;
   }
+  window._adminLoggedIn = true;
 
   let currentTab = 'students';
   let selectedStudent = null;
@@ -237,7 +238,7 @@ function renderLogin(container, ctx) {
         <h2 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 16px;">관리자 로그인</h2>
         <input type="password" id="admin-pw" placeholder="비밀번호를 입력하세요" autocomplete="off">
         <button class="btn btn-primary btn-block" id="admin-login-btn">로그인</button>
-        <p style="font-size: 0.75rem; color: var(--color-text-muted); margin-top: 12px;">기본 비밀번호: 1234</p>
+        <p style="font-size: 0.75rem; color: var(--color-text-muted); margin-top: 12px;">관리자에게 비밀번호를 문의하세요</p>
       </div>
     </div>
   `;
@@ -246,6 +247,7 @@ function renderLogin(container, ctx) {
     const pw = document.getElementById('admin-pw').value;
     if (store.checkAdminPassword(pw)) {
       window._adminLoggedIn = true;
+      sessionStorage.setItem('adminLoggedIn', 'true');
       renderAdmin(container, ctx);
     } else {
       showToast('비밀번호가 틀렸습니다 ❌');

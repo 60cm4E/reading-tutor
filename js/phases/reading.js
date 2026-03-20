@@ -88,21 +88,33 @@ export function renderReading(container, ctx) {
       sentEl.addEventListener('mouseleave', () => clearTimeout(longPressTimer));
     });
 
-    // Read all
+    // Read all / Stop reading
+    function stopReadAll() {
+      isReadingAll = false;
+      tts.stop();
+      const btn = document.getElementById('read-all');
+      if (btn) btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 전체 읽기`;
+      btn?.classList.remove('reading');
+    }
+
     async function doReadAll() {
-      if (isReadingAll) return;
+      if (isReadingAll) {
+        stopReadAll();
+        return;
+      }
       isReadingAll = true;
       const btn = document.getElementById('read-all');
-      btn.textContent = '⏹ 읽는 중...';
+      btn.innerHTML = '⏹ 멈추기';
+      btn?.classList.add('reading');
 
       for (let i = 0; i < passage.length; i++) {
         if (!isReadingAll) break;
         await readSentenceWithKaraoke(i);
+        if (!isReadingAll) break;
         await delay(400);
       }
 
-      isReadingAll = false;
-      if (btn) btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 전체 읽기`;
+      stopReadAll();
     }
     document.getElementById('read-all')?.addEventListener('click', doReadAll);
 
@@ -118,8 +130,22 @@ export function renderReading(container, ctx) {
     }
     document.getElementById('toggle-translate')?.addEventListener('click', toggleTranslate);
 
-    // Finish
+    // Finish with confirmation
+    let finishClickCount = 0;
+    let finishTimer = null;
     function finishReading() {
+      finishClickCount++;
+      if (finishClickCount === 1) {
+        showToast('한 번 더 누르면 읽기 완료!');
+        const btn = document.getElementById('finish-reading');
+        if (btn) btn.textContent = '정말 완료할까요? 🤔';
+        finishTimer = setTimeout(() => {
+          finishClickCount = 0;
+          if (btn) btn.innerHTML = '읽기 완료! ✓';
+        }, 3000);
+        return;
+      }
+      clearTimeout(finishTimer);
       tts.stop();
       isReadingAll = false;
       store.markPhaseComplete(reading.id, 'reading');
